@@ -12,7 +12,8 @@ def main():
 
     docs = {}
 
-    total = 100000000
+    # total = 100000000
+    total = 1000000
     bulk_num = 10000
 
     for t in range(0, int(total/bulk_num)):
