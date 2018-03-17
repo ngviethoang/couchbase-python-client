@@ -1,7 +1,9 @@
 from couchbase.cluster import Cluster, PasswordAuthenticator, CouchbaseError
 import datetime
+import string
+from random import *
 
-USERNAME = 'admin'
+USERNAME = 'Administrator'
 PASSWORD = '123456'
 BUCKET = 'test'
 
@@ -19,7 +21,7 @@ def main():
     for t in range(0, int(total/bulk_num)):
         for id in range(0, bulk_num):
             id += bulk_num * t
-            docs.update({str(id): {'id': id}})
+            docs.update({str(id): {'id': id, 'str': rand_str()}})
         try:
             bucket.insert_multi(docs)
             print(t)
@@ -32,6 +34,13 @@ def main():
                     print("Exception {0} would have been thrown".format(
                         CouchbaseError.rc_to_exctype(res.rc)))
         docs.clear()
+
+def rand_str():
+    min_char = 5
+    max_char = 10
+    allchar = string.ascii_letters
+# + string.punctuation + string.digits
+    return "".join(choice(allchar) for x in range(randint(min_char, max_char)))
 
 start = datetime.datetime.now()
 main()
