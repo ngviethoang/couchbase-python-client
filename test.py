@@ -13,18 +13,23 @@ def main():
     bucket = cluster.open_bucket(BUCKET)
 
     docs = {}
+    doc = {}
 
-    # total = 100000000
-    total = 1000000
+    total = 100000000
+    # total = 100000
     bulk_num = 10000
+    tt = int(total/bulk_num)
+    tt = 100
 
-    for t in range(0, int(total/bulk_num)):
+    for t in range(0, tt):
         for id in range(0, bulk_num):
             id += bulk_num * t
-            docs.update({str(id): {'id': id, 'str': rand_str()}})
+            doc = {str(id): {'id': id, 'str': rand_str(20, 25)}}
+            docs.update(doc)
+            doc.clear()
         try:
             bucket.insert_multi(docs)
-            print(t)
+            print(str(t + 1) + '/' + str(tt))
         except CouchbaseError as exc:
             for k, res in exc.all_results.items():
                 if res.success:
@@ -35,9 +40,7 @@ def main():
                         CouchbaseError.rc_to_exctype(res.rc)))
         docs.clear()
 
-def rand_str():
-    min_char = 5
-    max_char = 10
+def rand_str(min_char, max_char):
     allchar = string.ascii_letters
 # + string.punctuation + string.digits
     return "".join(choice(allchar) for x in range(randint(min_char, max_char)))
