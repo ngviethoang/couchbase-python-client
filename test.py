@@ -15,16 +15,13 @@ def main():
     docs = {}
     doc = {}
 
-    total = 100000000
-    # total = 100000
     bulk_num = 10000
-    tt = int(total/bulk_num)
-    tt = 100
+    tt = 10000
 
     for t in range(0, tt):
         for id in range(0, bulk_num):
             id += bulk_num * t
-            doc = {str(id): {'id': id, 'str': rand_str(20, 25)}}
+            doc = {str(id): {'id': id}}
             docs.update(doc)
             doc.clear()
         try:
