@@ -9,7 +9,7 @@ PASSWORD = '123456'
 STORE_NUM = 100
 CUSTOMERS_NUM = 1000
 
-faker = Faker()
+fake = Faker()
 
 
 def main():
@@ -24,14 +24,13 @@ def main():
 def insert_bucket(cluster, bucket_name, bulk_num, times):
     bucket = cluster.open_bucket(bucket_name)
     docs = {}
-    doc = {}
 
     for t in range(0, times):
         # update to docs array
         for id in range(0, bulk_num):
             id += bulk_num * t
 
-            if bucket == 'orders':
+            if bucket_name == 'orders':
                 doc = {
                     str(id): {
                         'id': id,
@@ -43,7 +42,7 @@ def insert_bucket(cluster, bucket_name, bulk_num, times):
                 doc = {
                     str(id): {
                         'id': id,
-                        'name': faker.name()
+                        'name': fake.name() if bucket_name == 'customers' else fake.address()
                     }
                 }
             docs.update(doc)
