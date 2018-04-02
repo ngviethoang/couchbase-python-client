@@ -1,32 +1,50 @@
 from couchbase.cluster import Cluster, PasswordAuthenticator, CouchbaseError
 import datetime
-import string
 from random import *
 
 USERNAME = 'Administrator'
 PASSWORD = '123456'
-BUCKET = 'test'
+
+STORE_NUM = 100
+CUSTOMERS_NUM = 1000
 
 def main():
     cluster = Cluster('couchbase://localhost')
     cluster.authenticate(PasswordAuthenticator(USERNAME, PASSWORD))
-    bucket = cluster.open_bucket(BUCKET)
 
+    insertBucket(cluster, 'stores', STORE_NUM, 1)
+    # insertBucket(cluster, 'customers', CUSTOMERS_NUM, 1)
+    # insertBucket(cluster, 'orders', 10000, 10000)
+
+def insertBucket(cluster, bucket, bulk_num, times):
+    cluster.open_bucket(bucket)
     docs = {}
     doc = {}
 
-    bulk_num = 10000
-    tt = 10000
-
-    for t in range(0, tt):
+    for t in range(0, times):
         for id in range(0, bulk_num):
             id += bulk_num * t
-            doc = {str(id): {'id': id}}
+
+            if bucket == 'orders':
+                doc = {
+                    str(id): {
+                        'id': id,
+                        'store_id': randint(0, STORE_NUM),
+                        'customer_id': randint(0, CUSTOMERS_NUM)
+                    }
+                }
+            else:
+                doc = {
+                    str(id): {
+                        'id': id
+                    }
+                }
+
             docs.update(doc)
             doc.clear()
         try:
             bucket.insert_multi(docs)
-            print(str(t + 1) + '/' + str(tt))
+            print(str(t + 1) + '/' + str(times))
         except CouchbaseError as exc:
             for k, res in exc.all_results.items():
                 if res.success:
@@ -36,11 +54,6 @@ def main():
                     print("Exception {0} would have been thrown".format(
                         CouchbaseError.rc_to_exctype(res.rc)))
         docs.clear()
-
-def rand_str(min_char, max_char):
-    allchar = string.ascii_letters
-# + string.punctuation + string.digits
-    return "".join(choice(allchar) for x in range(randint(min_char, max_char)))
 
 start = datetime.datetime.now()
 main()
