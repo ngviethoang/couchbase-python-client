@@ -16,9 +16,9 @@ def main():
     cluster = Cluster('couchbase://localhost')
     cluster.authenticate(PasswordAuthenticator(USERNAME, PASSWORD))
 
-    insert_bucket(cluster, 'stores', STORE_NUM, 1)
-    insert_bucket(cluster, 'customers', CUSTOMERS_NUM, 1)
-    # insert_bucket(cluster, 'orders', 10000, 10000)
+    #insert_bucket(cluster, 'stores', STORE_NUM, 1)
+    #insert_bucket(cluster, 'customers', CUSTOMERS_NUM, 1)
+    insert_bucket(cluster, 'orders', 10000, 10000)
 
 
 def insert_bucket(cluster, bucket_name, bulk_num, times):
@@ -34,8 +34,8 @@ def insert_bucket(cluster, bucket_name, bulk_num, times):
                 doc = {
                     str(id): {
                         'id': id,
-                        'store_id': randint(0, STORE_NUM),
-                        'customer_id': randint(0, CUSTOMERS_NUM)
+                        'sId': randint(0, STORE_NUM),
+                        'cId': randint(0, CUSTOMERS_NUM)
                     }
                 }
             else:
