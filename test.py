@@ -1,6 +1,7 @@
 from couchbase.cluster import Cluster, PasswordAuthenticator, CouchbaseError
 import datetime
 from random import *
+from faker import Faker
 
 USERNAME = 'Administrator'
 PASSWORD = '123456'
@@ -8,20 +9,25 @@ PASSWORD = '123456'
 STORE_NUM = 100
 CUSTOMERS_NUM = 1000
 
+faker = Faker()
+
+
 def main():
     cluster = Cluster('couchbase://localhost')
     cluster.authenticate(PasswordAuthenticator(USERNAME, PASSWORD))
 
-    insertBucket(cluster, 'stores', STORE_NUM, 1)
-    # insertBucket(cluster, 'customers', CUSTOMERS_NUM, 1)
-    # insertBucket(cluster, 'orders', 10000, 10000)
+    insert_bucket(cluster, 'stores', STORE_NUM, 1)
+    insert_bucket(cluster, 'customers', CUSTOMERS_NUM, 1)
+    # insert_bucket(cluster, 'orders', 10000, 10000)
 
-def insertBucket(cluster, bucket, bulk_num, times):
-    cluster.open_bucket(bucket)
+
+def insert_bucket(cluster, bucket_name, bulk_num, times):
+    bucket = cluster.open_bucket(bucket_name)
     docs = {}
     doc = {}
 
     for t in range(0, times):
+        # update to docs array
         for id in range(0, bulk_num):
             id += bulk_num * t
 
@@ -36,12 +42,13 @@ def insertBucket(cluster, bucket, bulk_num, times):
             else:
                 doc = {
                     str(id): {
-                        'id': id
+                        'id': id,
+                        'name': faker.name()
                     }
                 }
-
             docs.update(doc)
             doc.clear()
+        # insert into db
         try:
             bucket.insert_multi(docs)
             print(str(t + 1) + '/' + str(times))
@@ -51,9 +58,9 @@ def insertBucket(cluster, bucket, bulk_num, times):
                     print("Success")
                 else:
                     print("Key {0} failed with error code {1}".format(k, res.rc))
-                    print("Exception {0} would have been thrown".format(
-                        CouchbaseError.rc_to_exctype(res.rc)))
+                    print("Exception {0} would have been thrown".format(CouchbaseError.rc_to_exctype(res.rc)))
         docs.clear()
+
 
 start = datetime.datetime.now()
 main()
