@@ -17,7 +17,7 @@ def main():
 
     # insert_bucket(cluster, 'stores', STORE_NUM, 1, 0)
     # insert_bucket(cluster, 'customers', CUSTOMERS_NUM, 1, 0)
-    insert_bucket(cluster, 'orders', 10000, 4000, 0)
+    insert_bucket(cluster, 'orders', 10000, 10000, 0)
 
 
 def insert_bucket(cluster, bucket_name, bulk_num, times, start):
