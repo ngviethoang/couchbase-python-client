@@ -6,8 +6,8 @@ from faker import Faker
 USERNAME = 'Administrator'
 PASSWORD = '123456'
 
-STORE_NUM = 100
-CUSTOMERS_NUM = 1000
+STORE_NUM = 1000
+CUSTOMERS_NUM = 10000
 
 fake = Faker()
 
@@ -33,9 +33,9 @@ def insert_bucket(cluster, bucket_name, bulk_num, times, start):
                 doc = {
                     str(id): {
                         #'id': id,
-                        'sId': randint(0, STORE_NUM - 1),
-                        'cId': randint(0, CUSTOMERS_NUM - 1),
-                        'price': round(uniform(0.5, 100), 2)
+                        'sid': str(randint(0, STORE_NUM - 1)),
+                        'cid': str(randint(0, CUSTOMERS_NUM - 1)),
+                        'payment': round(uniform(0.5, 500), 2)
                     }
                 }
             else if bucket_name == 'customers':
@@ -55,10 +55,11 @@ def insert_bucket(cluster, bucket_name, bulk_num, times, start):
                 }
             docs.update(doc)
             doc.clear()
+        
         # insert into db
         try:
             bucket.insert_multi(docs)
-            print(str(t + 1) + '/' + str(times))
+            print('{}/{}'.format(t + 1, times))
         except CouchbaseError as exc:
             for k, res in exc.all_results.items():
                 if res.success:
@@ -71,5 +72,5 @@ def insert_bucket(cluster, bucket_name, bulk_num, times, start):
 
 start = datetime.datetime.now()
 main()
-print("start: " + str(start))
-print("end: " + str(datetime.datetime.now()))
+print('start: {}'.format(start))
+print('end: {}'.format(datetime.datetime.now()))
