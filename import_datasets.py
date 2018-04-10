@@ -36,11 +36,8 @@ def read_rating_file(filenum):
 				values = line.split(',')
 				if len(values) == 3:
 		  			customer_id = values[0]
-		  			try:
-						rating = int(values[1])
-					except ValueError:
-						rating = values[1]
-		  			date = values[2].strip()
+		  			rating = int(values[1])
+		  			# date = values[2].strip()
 
 		  			k = str(filenum) + str(cnt)
 			  		doc = {
@@ -48,7 +45,7 @@ def read_rating_file(filenum):
 	                    	'mid': movie_id,
 	                        'cid': customer_id,
 	                        'r': rating,
-	                        'd': date
+	                        # 'd': date
 	                    }
 	                }
 
@@ -70,9 +67,9 @@ def read_movie_file():
 	    for row in readCSV:
 	        movie_id = row[0]
 	        try:
-				release_year = int(row[1])
-			except ValueError:
-				release_year = row[1]
+			release_year = int(row[1])
+		except ValueError:
+			release_year = row[1]
 	        title = row[2]
 	        
 	        doc = {
