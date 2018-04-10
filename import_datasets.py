@@ -8,23 +8,23 @@ USERNAME = 'Administrator'
 PASSWORD = '123456'
 
 DIR_NAME = 'datasets-netflix'
-docs = {}
-doc = {}
 
 cluster = Cluster('couchbase://localhost')
 cluster.authenticate(PasswordAuthenticator(USERNAME, PASSWORD))
 
 def main():
 
-	read_movie_file()
+	# read_movie_file()
 
 	filenum = 1
 	while(filenum <= 4):
 		print('file {}'.format(filenum))
-		# read_rating_file(filenum)
+		read_rating_file(filenum)
 		filenum += 1
 
 def read_rating_file(filenum):
+	docs = {}
+	doc = {}
 	cnt = 0
 	movie_id = 0
 	filename = 'combined_data_' + str(filenum) + '.txt'
@@ -36,7 +36,10 @@ def read_rating_file(filenum):
 				values = line.split(',')
 				if len(values) == 3:
 		  			customer_id = values[0]
-		  			rating = values[1]
+		  			try:
+						rating = int(values[1])
+					except ValueError:
+						rating = values[1]
 		  			date = values[2].strip()
 
 		  			k = str(filenum) + str(cnt)
