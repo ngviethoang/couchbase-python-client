@@ -39,4 +39,4 @@ CouchbaseMock.jar
 /make.sh
 html
 latex
-
+datasets*
