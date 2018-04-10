@@ -66,7 +66,10 @@ def read_movie_file():
 	    readCSV = csv.reader(csvfile, delimiter=',')
 	    for row in readCSV:
 	        movie_id = row[0]
-	        release_year = int(row[1]) if row[1] is not None else row[1]
+	        try:
+				release_year = int(row[1])
+			except ValueError:
+				release_year = row[1]
 	        title = row[2]
 	        
 	        doc = {
