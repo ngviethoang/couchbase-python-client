@@ -12,12 +12,12 @@ CUSTOMERS_NUM = 10000
 fake = Faker()
 
 def main():
-	cluster = Cluster('couchbase://localhost')
+    cluster = Cluster('couchbase://localhost')
     cluster.authenticate(PasswordAuthenticator(USERNAME, PASSWORD))
 
     insert_bucket(cluster, 'stores', STORE_NUM, 1, 0)
-    insert_bucket(cluster, 'customers', CUSTOMERS_NUM, 1, 0)
-    insert_bucket(cluster, 'orders', 10000, 10000, 0)
+    #insert_bucket(cluster, 'customers', CUSTOMERS_NUM, 1, 0)
+    #insert_bucket(cluster, 'orders', 10000, 10000, 0)
 
 
 def insert_bucket(cluster, bucket_name, bulk_num, times, start):
@@ -38,7 +38,7 @@ def insert_bucket(cluster, bucket_name, bulk_num, times, start):
                         'payment': round(uniform(0.5, 500), 2)
                     }
                 }
-            else if bucket_name == 'customers':
+            elif bucket_name == 'customers':
                 doc = {
                     str(id): {
                         #'id': id,
