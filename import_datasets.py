@@ -17,17 +17,22 @@ def main():
 	# read_movie_file()
 
 	filenum = 1
+	id = 0
 	while(filenum <= 4):
 		print('file {}'.format(filenum))
-		read_rating_file(filenum)
+		id = read_rating_file(filenum, id)
+		id += 1
 		filenum += 1
 
-def read_rating_file(filenum):
+def read_rating_file(filenum, start_id):
 	docs = {}
 	doc = {}
-	cnt = 0
+	cnt = start_id
 	movie_id = 0
 	filename = 'combined_data_' + str(filenum) + '.txt'
+
+	print('{}'.format(cnt))
+
 	with open(os.path.join(DIR_NAME, filename), 'r') as fp:
 		for line in fp:
 			if ':' in line:
@@ -39,9 +44,8 @@ def read_rating_file(filenum):
 		  			rating = int(values[1])
 		  			# date = values[2].strip()
 
-		  			k = str(filenum) + str(cnt)
 			  		doc = {
-	                    k: {
+	                    str(cnt): {
 	                    	'mid': movie_id,
 	                        'cid': customer_id,
 	                        'r': rating,
@@ -55,9 +59,15 @@ def read_rating_file(filenum):
             		if cnt > 0 and cnt % 10000 == 0:
             			upsert_docs('ratings', docs)
             			docs.clear()
+
+            		if cnt == 100000000:
+            			return cnt
 			cnt += 1
 		upsert_docs('ratings', docs)
 		docs.clear()
+
+	print('{}'.format(cnt))
+	return cnt
 
 def read_movie_file():
 	filename = 'movie_titles.csv'
