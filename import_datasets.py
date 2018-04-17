@@ -47,7 +47,7 @@ def read_rating_file(filenum, start_id):
 			  		doc = {
 	                    str(cnt): {
 	                    	'mid': movie_id,
-	                        'cid': customer_id,
+	                        # 'cid': customer_id,
 	                        'r': rating,
 	                        # 'd': date
 	                    }
@@ -60,8 +60,6 @@ def read_rating_file(filenum, start_id):
             			upsert_docs('ratings', docs)
             			docs.clear()
 
-            		if cnt == 100000000:
-            			return cnt
 			cnt += 1
 		upsert_docs('ratings', docs)
 		docs.clear()
