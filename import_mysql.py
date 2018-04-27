@@ -18,7 +18,7 @@ def main():
 	filenum = 1
 	while(filenum <= 4):
 		print('file {}'.format(filenum))
-		#read_rating_file(filenum)
+		read_rating_file(filenum)
 		filenum += 1
 
 def read_rating_file(filenum):
@@ -39,7 +39,7 @@ def read_rating_file(filenum):
 		  			# date = values[2].strip()
 
 		  			id = str(filenum) + str(cnt)
-			  		doc = [id, movie_id, customer_id, rating]
+			  		doc = [id, movie_id, customer_id[:4], rating]
 
 	                docs.append(doc)
             		del doc[:]
@@ -68,15 +68,27 @@ def read_movie_file():
     	upsert_docs('movies', docs)
     	del docs[:]
 
+def insert_customers():
+	docs = []
+	for id in range(0, bulk_num):
+        doc = [str(id), fake.name(), fake.address()]
+            
+        docs.append(doc)
+        del doc[:]
+    
+    upsert_docs('customers', docs)
+    del docs[:]
 
 def upsert_docs(bucket_name, docs):
 	if bucket_name == 'movies':
-		print(docs)
 		docs.pop()
 		cursor.executemany("insert into movies (id, release_year, title) values (%s, %s, %s)", docs)
 	elif bucket_name == 'ratings':
 		cursor.executemany("insert into ratings (id, movie_id, customer_id, rating) values (%s, %s, %s, %s)", docs)
+	elif bucket_name == 'customers':
+		cursor.executemany("insert into customers (id, name, address) values (%s, %s, %s)", docs)
 
+insert_customers()
 main()
 db.commit()
 db.close()
