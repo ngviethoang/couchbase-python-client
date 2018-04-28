@@ -70,6 +70,7 @@ def read_rating_file(filenum, start_id):
 
 
 def read_movie_file():
+    docs = {}
     filename = 'movie_titles.csv'
 
     with open(os.path.join(DIR_NAME, filename), 'r') as csvfile:
