@@ -3,8 +3,11 @@ import os
 import csv
 import datetime
 import pymysql
+from faker import Faker
 
-db = pymysql.connect(host="127.0.0.1", user="root", passwd="ngviethoang", db="netflix") 
+fake = Faker()
+
+db = pymysql.connect(host="127.0.0.1", user="root", passwd="123456", db="test")
 cursor=db.cursor()
 
 docs = []
@@ -13,7 +16,9 @@ DIR_NAME = 'datasets-netflix'
 
 def main():
 
-	read_movie_file()
+	# read_movie_file()
+
+	# insert_customers()
 
 	filenum = 1
 	while(filenum <= 4):
@@ -22,8 +27,7 @@ def main():
 		filenum += 1
 
 def read_rating_file(filenum):
-	docs = {}
-	doc = {}
+	doc = []
 	cnt = 0
 	movie_id = 0
 	filename = 'combined_data_' + str(filenum) + '.txt'
@@ -38,18 +42,17 @@ def read_rating_file(filenum):
 		  			rating = int(values[1])
 		  			# date = values[2].strip()
 
-		  			id = str(filenum) + str(cnt)
-			  		doc = [id, movie_id, customer_id[:4], rating]
+			  		doc = [movie_id, customer_id[:4], rating]
 
-	                docs.append(doc)
-            		del doc[:]
+	                		docs.append(doc)
 
             		if cnt > 0 and cnt % 10000 == 0:
+				print('docs {} {}'.format(len(docs), len(docs[0])))
             			upsert_docs('ratings', docs)
-            			del docs[:]
 			cnt += 1
+
+		print('docs {}'.format(len(docs)))
 		upsert_docs('ratings', docs)
-		del docs[:]
 
 def read_movie_file():
 	filename = 'movie_titles.csv'
@@ -58,37 +61,42 @@ def read_movie_file():
 	    readCSV = csv.reader(csvfile, delimiter=',')
 	    for row in readCSV:
 	        movie_id = row[0]
-	        release_year = row[1]
+	        try:
+                	release_year = int(row[1])
+            	except ValueError:
+                	release_year = None
 	        title = row[2]
-	        
+
 	        doc = [movie_id, release_year, title]
 	        if len(doc) == 3:
 	        	docs.append(doc)
             del doc[:]
+
+	print('docs {}'.format(len(docs)))
     	upsert_docs('movies', docs)
     	del docs[:]
 
 def insert_customers():
 	docs = []
-	for id in range(0, bulk_num):
-        doc = [str(id), fake.name(), fake.address()]
-            
-        docs.append(doc)
-        del doc[:]
-    
-    upsert_docs('customers', docs)
-    del docs[:]
+	for id in range(0, 10000):
+        	doc = [str(id), fake.name(), fake.address()]
+		print(doc)
+        	docs.append(doc)
+
+	print('docs {}'.format(len(docs)))
+	upsert_docs('customers', docs)
+	del docs[:]
 
 def upsert_docs(bucket_name, docs):
 	if bucket_name == 'movies':
 		docs.pop()
-		cursor.executemany("insert into movies (id, release_year, title) values (%s, %s, %s)", docs)
+		cursor.executemany("insert into movies (id, r_year, title) values (%s, %s, %s)", docs)
 	elif bucket_name == 'ratings':
-		cursor.executemany("insert into ratings (id, movie_id, customer_id, rating) values (%s, %s, %s, %s)", docs)
+		cursor.executemany("insert into ratings (movie_id, customer_id, rating) values (%s, %s, %s)", docs)
 	elif bucket_name == 'customers':
 		cursor.executemany("insert into customers (id, name, address) values (%s, %s, %s)", docs)
 
-insert_customers()
+	db.commit()
+
 main()
-db.commit()
 db.close()
