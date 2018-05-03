@@ -2,12 +2,13 @@ import sys
 import os
 import csv
 import datetime
+from random import *
 import pymysql
 from faker import Faker
 
 fake = Faker()
 
-db = pymysql.connect(host="127.0.0.1", user="root", passwd="123456", db="test")
+db = pymysql.connect(host="127.0.0.1", user="root", passwd="123456", db="netflix")
 cursor=db.cursor()
 
 docs = []
@@ -23,7 +24,7 @@ def main():
 	filenum = 1
 	while(filenum <= 4):
 		print('file {}'.format(filenum))
-		read_rating_file(filenum)
+		# read_rating_file(filenum)
 		filenum += 1
 
 def read_rating_file(filenum):
@@ -79,9 +80,8 @@ def read_movie_file():
 def insert_customers():
 	docs = []
 	for id in range(0, 10000):
-        	doc = [str(id), fake.name(), fake.address()]
-		print(doc)
-        	docs.append(doc)
+		doc = [fake.name(), fake.address()]
+		docs.append(doc)
 
 	print('docs {}'.format(len(docs)))
 	upsert_docs('customers', docs)
@@ -94,9 +94,20 @@ def upsert_docs(bucket_name, docs):
 	elif bucket_name == 'ratings':
 		cursor.executemany("insert into ratings (movie_id, customer_id, rating) values (%s, %s, %s)", docs)
 	elif bucket_name == 'customers':
-		cursor.executemany("insert into customers (id, name, address) values (%s, %s, %s)", docs)
+		cursor.executemany("insert into customers (name, address) values (%s, %s)", docs)
 
 	db.commit()
+
+def insert_ratings():
+	for i in range(0, 2000):
+		docs = []
+		for id in range(0, 10000):
+			doc = [randint(1, 17699), randint(1, 10000), randint(1, 5)]
+			docs.append(doc)
+
+		print('docs {}'.format(len(docs)))
+		upsert_docs('ratings', docs)
+		del docs[:]
 
 main()
 db.close()
