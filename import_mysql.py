@@ -21,6 +21,8 @@ def main():
 
 	# insert_customers()
 
+	insert_ratings()
+
 	filenum = 1
 	while(filenum <= 4):
 		print('file {}'.format(filenum))
