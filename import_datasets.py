@@ -40,14 +40,17 @@ def insert_ratings():
     for i in range(0, int(total / bulk)):
         docs = {}
         print(str(i))
+
+        cnt = i * bulk
         for id in range(0, bulk):
             doc = {
-                str(id): {
+                str(cnt): {
                     'mid': str(randint(1, 17769)),
                     'cid': str(randint(1, 10000)),
                     'r': randint(1, 5)
                 }
             }
+            cnt += 1
             docs.update(doc)
             doc.clear()
 
