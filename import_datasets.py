@@ -32,6 +32,37 @@ def main():
     #     filenum += 1
 
 
+def insert_ratings():
+    total = 1000
+    bulk = 1000
+    run_time = 0
+
+    for i in range(0, int(total / bulk)):
+        docs = {}
+        print(str(i))
+        for id in range(0, bulk):
+            doc = {
+                str(id): {
+                    'mid': str(randint(1, 17769)),
+                    'cid': str(randint(1, 10000)),
+                    'r': randint(1, 5)
+                }
+            }
+            docs.update(doc)
+            doc.clear()
+
+        print('docs {}'.format(len(docs)))
+
+        start_time = time.time()
+        upsert_docs('ratings', docs)
+        r_time = time.time() - start_time
+        print(r_time)
+        run_time += r_time
+
+        docs.clear()
+
+    print('%s seconds' % run_time)
+
 def read_rating_file(filenum, start_id):
     total = 100000
     bulk = 5000
@@ -123,47 +154,6 @@ def upsert_docs(bucket_name, docs):
             else:
                 print("Key {0} failed with error code {1}".format(k, res.rc))
                 print("Exception {0} would have been thrown".format(CouchbaseError.rc_to_exctype(res.rc)))
-
-
-def insert_ratings():
-    bucket = cluster.open_bucket('ratings')
-
-    total = 1000
-    bulk = 1000
-    run_time = 0
-
-    for i in range(0, int(total / bulk)):
-        docs = {}
-        print(str(i))
-        for id in range(0, bulk):
-            doc = {
-                str(id): {
-                    'mid': str(randint(1, 17769)),
-                    'cid': str(randint(1, 10000)),
-                    'r': randint(1, 5)
-                }
-            }
-            docs.update(doc)
-            doc.clear()
-
-        print('docs {}'.format(len(docs)))
-
-        try:
-            start_time = time.time()
-            bucket.insert_multi(docs)
-            r_time = time.time() - start_time
-            print(r_time)
-            run_time += r_time
-        except CouchbaseError as exc:
-            for k, res in exc.all_results.items():
-                if res.success:
-                    print("Success")
-                else:
-                    print("Key {0} failed with error code {1}".format(k, res.rc))
-                    print("Exception {0} would have been thrown".format(CouchbaseError.rc_to_exctype(res.rc)))
-        docs.clear()
-
-    print('%s seconds' % run_time)
 
 
 main()
