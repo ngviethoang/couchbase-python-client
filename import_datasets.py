@@ -56,15 +56,13 @@ def insert_ratings():
 
         print('docs {}'.format(len(docs)))
 
-        start_time = time.time()
-        upsert_docs('ratings', docs)
-        r_time = time.time() - start_time
-        print(r_time)
+        r_time = upsert_docs('ratings', docs)
         run_time += r_time
 
         docs.clear()
 
     print('%s seconds' % run_time)
+
 
 def read_rating_file(filenum, start_id):
     total = 100000
@@ -146,9 +144,16 @@ def read_movie_file():
 
 def upsert_docs(bucket_name, docs):
     bucket = cluster.open_bucket(bucket_name)
+    r_time = 0
 
     try:
+        start_time = time.time()
+
         bucket.insert_multi(docs)
+
+        r_time = time.time() - start_time
+        print(r_time)
+
         print('insert bucket {} docs {}'.format(bucket_name, len(docs)))
     except CouchbaseError as exc:
         for k, res in exc.all_results.items():
@@ -157,6 +162,8 @@ def upsert_docs(bucket_name, docs):
             else:
                 print("Key {0} failed with error code {1}".format(k, res.rc))
                 print("Exception {0} would have been thrown".format(CouchbaseError.rc_to_exctype(res.rc)))
+
+    return r_time
 
 
 main()
