@@ -18,14 +18,19 @@ def main():
 
     filenum = 1
     id = 0
-    while (filenum <= 4):
+    while filenum <= 4:
         print('file {}'.format(filenum))
         id = read_rating_file(filenum, id)
+        if id is None:
+            break
         id += 1
         filenum += 1
 
 
 def read_rating_file(filenum, start_id):
+    total = 100000
+    bulk = 5000
+
     docs = {}
     doc = {}
     cnt = start_id
@@ -57,11 +62,15 @@ def read_rating_file(filenum, start_id):
             docs.update(doc)
             doc.clear()
 
-            if cnt > 0 and cnt % 10000 == 0:
+            if cnt > 0 and cnt % bulk == 0:
                 upsert_docs('ratings', docs)
                 docs.clear()
 
             cnt += 1
+
+            if cnt > total:
+                return None
+
         upsert_docs('ratings', docs)
         docs.clear()
 
@@ -71,6 +80,7 @@ def read_rating_file(filenum, start_id):
 
 def read_movie_file():
     docs = {}
+    doc = {}
     filename = 'movie_titles.csv'
 
     with open(os.path.join(DIR_NAME, filename), 'r') as csvfile:

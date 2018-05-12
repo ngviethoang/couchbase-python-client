@@ -11,13 +11,14 @@ CUSTOMERS_NUM = 10000
 
 fake = Faker()
 
+
 def main():
     cluster = Cluster('couchbase://localhost')
     cluster.authenticate(PasswordAuthenticator(USERNAME, PASSWORD))
 
     # insert_bucket(cluster, 'stores', STORE_NUM, 1, 0)
     insert_bucket(cluster, 'customers', CUSTOMERS_NUM, 1, 0)
-    #insert_bucket(cluster, 'orders', 10000, 10000, 0)
+    # insert_bucket(cluster, 'orders', 10000, 10000, 0)
 
 
 def insert_bucket(cluster, bucket_name, bulk_num, times, start):
@@ -32,7 +33,7 @@ def insert_bucket(cluster, bucket_name, bulk_num, times, start):
             if bucket_name.startswith('orders'):
                 doc = {
                     str(id): {
-                        #'id': id,
+                        # 'id': id,
                         'sid': str(randint(0, STORE_NUM - 1)),
                         'cid': str(randint(0, CUSTOMERS_NUM - 1)),
                         'payment': round(uniform(0.5, 500), 2)
@@ -41,22 +42,22 @@ def insert_bucket(cluster, bucket_name, bulk_num, times, start):
             elif bucket_name == 'customers':
                 doc = {
                     str(id): {
-                        #'id': id,
+                        # 'id': id,
                         'name': fake.name(),
                         'address': fake.address()
                     }
                 }
-            else: #stores
-            	doc = {
+            else:  # stores
+                doc = {
                     str(id): {
-                        #'id': id,
+                        # 'id': id,
                         'name': fake.text()[:randint(10, 20)],
                         'address': fake.address()
                     }
                 }
             docs.update(doc)
             doc.clear()
-        
+
         # insert into db
         try:
             bucket.insert_multi(docs)
