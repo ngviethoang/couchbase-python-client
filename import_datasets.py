@@ -33,8 +33,8 @@ def main():
 
 
 def insert_ratings():
-    total = 1000
-    bulk = 1000
+    total = 100000000
+    bulk = 100000
     run_time = 0
 
     for i in range(0, int(total / bulk)):
@@ -56,7 +56,7 @@ def insert_ratings():
 
         print('docs {}'.format(len(docs)))
 
-        r_time = upsert_docs('ratings', docs)
+        r_time = upsert_docs('ratings', docs, run_time)
         run_time += r_time
 
         docs.clear()
@@ -142,7 +142,7 @@ def read_movie_file():
     docs.clear()
 
 
-def upsert_docs(bucket_name, docs):
+def upsert_docs(bucket_name, docs, run_time=None):
     bucket = cluster.open_bucket(bucket_name)
     r_time = 0
 
@@ -156,12 +156,13 @@ def upsert_docs(bucket_name, docs):
 
         print('insert bucket {} docs {}'.format(bucket_name, len(docs)))
     except CouchbaseError as exc:
-        for k, res in exc.all_results.items():
-            if res.success:
-                print("Success")
-            else:
-                print("Key {0} failed with error code {1}".format(k, res.rc))
-                print("Exception {0} would have been thrown".format(CouchbaseError.rc_to_exctype(res.rc)))
+        print('run time %s' % str(run_time))
+        # for k, res in exc.all_results.items():
+        #     if res.success:
+        #         print("Success")
+        #     else:
+        #         print("Key {0} failed with error code {1}".format(k, res.rc))
+        #         print("Exception {0} would have been thrown".format(CouchbaseError.rc_to_exctype(res.rc)))
 
     return r_time
 
