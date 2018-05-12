@@ -3,11 +3,11 @@ import csv
 from random import *
 import pymysql
 from faker import Faker
-import datetime
+import time
 
 fake = Faker()
 
-db = pymysql.connect(host="127.0.0.1", user="root", passwd="123456", db="netflix")
+db = pymysql.connect(host="127.0.0.1", user="root", passwd="123456", db="movies")
 cursor = db.cursor()
 
 docs = []
@@ -16,14 +16,12 @@ DIR_NAME = 'datasets-netflix'
 
 
 def main():
-    read_movie_file()
+    # read_movie_file()
+    # insert_customers()
 
-    insert_customers()
-
-    start = datetime.datetime.now()
+    start_time = time.time()
     insert_ratings()
-    print('start: {}'.format(start))
-    print('end: {}'.format(datetime.datetime.now()))
+    print("--- %s seconds ---" % (time.time() - start_time))
 
     # filenum = 1
     # id = 0
@@ -109,7 +107,7 @@ def insert_customers():
 def upsert_docs(bucket_name, docs):
     if bucket_name == 'movies':
         docs.pop()
-        cursor.executemany("insert into movies (id, r_year, title) values (%s, %s, %s)", docs)
+        cursor.executemany("insert into movies (id, release_year, title) values (%s, %s, %s)", docs)
     elif bucket_name == 'ratings':
         cursor.executemany("insert into ratings (movie_id, customer_id, rating) values (%s, %s, %s)", docs)
     elif bucket_name == 'customers':
