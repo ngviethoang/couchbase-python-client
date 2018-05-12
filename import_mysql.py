@@ -19,9 +19,7 @@ def main():
     # read_movie_file()
     # insert_customers()
 
-    start_time = time.time()
     insert_ratings()
-    print("--- %s seconds ---" % (time.time() - start_time))
 
     # filenum = 1
     # id = 0
@@ -118,17 +116,26 @@ def upsert_docs(bucket_name, docs):
 
 def insert_ratings():
     total = 10000
-    bulk = 10000
+    bulk = 1000
+    run_time = 0
 
     for i in range(0, int(total / bulk)):
         docs = []
         for id in range(0, bulk):
-            doc = [randint(1, 17699), randint(1, 10000), randint(1, 5)]
+            doc = [randint(1, 17769), randint(1, 10000), randint(1, 5)]
             docs.append(doc)
 
         print('docs {}'.format(len(docs)))
+
+        start_time = time.time()
         upsert_docs('ratings', docs)
+        r_time = time.time() - start_time
+        print(r_time)
+        run_time += r_time
+
         del docs[:]
+
+    print('%s seconds' % run_time)
 
 
 main()
