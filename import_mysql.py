@@ -121,6 +121,8 @@ def insert_ratings():
 
     for i in range(0, int(total / bulk)):
         docs = []
+        doc = []
+        print(str(i))
         for id in range(0, bulk):
             doc = [randint(1, 17769), randint(1, 10000), randint(1, 5)]
             docs.append(doc)
@@ -134,6 +136,7 @@ def insert_ratings():
         run_time += r_time
 
         del docs[:]
+        del doc[:]
 
     print('%s seconds' % run_time)
 
